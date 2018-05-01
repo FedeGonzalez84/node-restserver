@@ -20,7 +20,7 @@ mongoose.connect(process.env.URLDB, (err, res) => {
 });
 
 //Importo las rutas
-app.use(require('./routes/usuario'));
+app.use(require('./routes/index'));
 
 app.listen(process.env.PORT, () => {
     console.log("Escuchando puerto: ", process.env.PORT);

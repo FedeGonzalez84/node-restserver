@@ -2,10 +2,11 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const Usuario = require('../models/usuario');
+const { verificaToken, verificaAdmin_Role } = require('../middlewares/autenticacion');
 const app = express();
 
 //--------------------------------------------------------------------
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToken, function(req, res) {
     //Para la paginación
     let desde = Number(req.query.desde) || 0;
     let limite = Number(req.query.limite) || 5;
@@ -30,7 +31,7 @@ app.get('/usuario', function(req, res) {
         })
 });
 //--------------------------------------------------------------------
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificaToken, verificaAdmin_Role], function(req, res) {
 
     let body = req.body;
 
@@ -56,7 +57,7 @@ app.post('/usuario', function(req, res) {
 
 });
 //--------------------------------------------------------------------
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
     let id = req.params.id;
 
     //Selecciono del body solo aquello que puedo actualizar
@@ -78,7 +79,7 @@ app.put('/usuario/:id', function(req, res) {
 
 });
 //--------------------------------------------------------------------
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
 
     let id = req.params.id;
 
@@ -93,7 +94,9 @@ app.delete('/usuario/:id', function(req, res) {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                err
+                err: {
+                    message: 'Token no válido'
+                }
             });
         }
         if (!usuarioBorrado) {
